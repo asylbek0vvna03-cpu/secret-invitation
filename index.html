@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Secret Invitation</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Arial,sans-serif;background:linear-gradient(135deg,#031b4e,#0d6efd);overflow:hidden;color:#fff}
+.screen{display:none;height:100vh;justify-content:center;align-items:center;padding:20px}
+.screen.active{display:flex}
+.card{width:min(420px,95%);background:rgba(255,255,255,.1);backdrop-filter:blur(15px);border:1px solid rgba(255,255,255,.2);border-radius:22px;padding:30px;text-align:center;box-shadow:0 0 25px rgba(0,0,0,.2)}
+h1{margin-bottom:15px}p{line-height:1.5;margin-bottom:18px}
+button{padding:14px 22px;border:0;border-radius:12px;font-size:18px;font-weight:bold;cursor:pointer;background:#fff;color:#0b5ed7;transition:.2s}
+button:hover{transform:scale(1.05)}
+#progress{height:16px;background:#294;border-radius:20px;overflow:hidden}
+#bar{height:100%;width:0;background:linear-gradient(90deg,#8ed6ff,#fff)}
+#choiceBox{position:relative;height:180px}
+#yes{position:relative}
+#no,#maybe{position:absolute;top:90px}
+#no{left:20px}
+#maybe{right:20px}
+.heart,.conf{position:fixed;pointer-events:none}
+.heart{top:-20px;font-size:22px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh);opacity:0}}
+.conf{width:8px;height:14px;animation:conf 2s linear forwards}
+@keyframes conf{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
+</style>
+</head>
+<body>
+
+<div class="screen active" id="s1"><div class="card">
+<h1>⚠️ Срочное уведомление ⚠️</h1>
+<p>Для продолжения необходимо подтвердить личность.</p>
+<button onclick="show(2)">Продолжить</button>
+</div></div>
+
+<div class="screen" id="s2"><div class="card">
+<h1>Система обнаружила подозрительную активность</h1>
+<p>Причина: Слишком часто думаешь об одной девушке.</p>
+<button onclick="show(3)">Это ошибка</button>
+</div></div>
+
+<div class="screen" id="s3"><div class="card">
+<h1>Проверяем данные...</h1>
+<div id="progress"><div id="bar"></div></div>
+<p id="txt">0%</p>
+</div></div>
+
+<div class="screen" id="s4"><div class="card">
+<h1>Вердикт готов ❤️</h1>
+<p>Вы признаны виновным в том, что украли мое сердце.</p>
+<button onclick="show(5)">Что теперь?</button>
+</div></div>
+
+<div class="screen" id="s5"><div class="card">
+<h1>Обязательное свидание 💙🤍</h1>
+<p>📅 Сегодня после работы<br>📍 Моё рабочее место</p>
+<div id="choiceBox">
+<button id="yes">of course 🫶</button>
+<button id="no">no ·ࡇ·</button>
+<button id="maybe">posmotrim ᯣ_ᯣ</button>
+</div>
+</div></div>
+
+<div class="screen" id="s6"><div class="card">
+<h1>💙 Молодец 😙</h1>
+<p>До встречи сегодня после работы 🤍</p>
+</div></div>
+
+<script>
+function show(n){
+document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+document.getElementById("s"+n).classList.add("active");
+if(n===3)load();
+if(n===6){hearts();confetti();}
+}
+function load(){
+let p=0;
+const msgs=["Проверяем данные...","Найдены фотографии...","Анализируем переписки...","Почти готово..."];
+let i=0;
+const t=setInterval(()=>{
+p+=2;
+bar.style.width=p+"%";
+txt.textContent=p+"% • "+msgs[Math.min(i,3)];
+if(p%25===0)i++;
+if(p>=100){clearInterval(t);setTimeout(()=>show(4),600);}
+},60);
+}
+yes.onclick=()=>show(6);
+function dodge(btn){
+btn.style.left=Math.random()*(innerWidth-140)+"px";
+btn.style.top=Math.random()*(innerHeight-120)+"px";
+}
+["no","maybe"].forEach(id=>{
+const b=document.getElementById(id);
+["mouseenter","touchstart","click"].forEach(ev=>b.addEventListener(ev,e=>{e.preventDefault();dodge(b);}));
+});
+function hearts(){
+setInterval(()=>{
+let h=document.createElement("div");
+h.className="heart";
+h.textContent=Math.random()>0.5?"💙":"🤍";
+h.style.left=Math.random()*100+"vw";
+h.style.animationDuration=(3+Math.random()*3)+"s";
+document.body.appendChild(h);
+setTimeout(()=>h.remove(),6000);
+},180);
+}
+function confetti(){
+for(let i=0;i<180;i++){
+let c=document.createElement("div");
+c.className="conf";
+c.style.left=Math.random()*100+"vw";
+c.style.top="-20px";
+c.style.background=Math.random()>0.5?"#59b8ff":"#fff";
+c.style.animationDelay=(Math.random())+"s";
+document.body.appendChild(c);
+setTimeout(()=>c.remove(),2200);
+}
+}
+</script>
+</body>
+</html>
