@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Шуточный розыгрыш</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#dff3ff,#7fb7ff);display:flex;justify-content:center;align-items:center;min-height:100vh;overflow:hidden}
+.card{width:min(92vw,420px);background:rgba(255,255,255,.28);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.35);border-radius:24px;padding:28px;text-align:center;position:relative;min-height:420px;overflow:hidden}
+.screen{display:none;animation:fade .5s}.screen.active{display:block}
+button{border:none;border-radius:14px;padding:14px 18px;font-size:17px;cursor:pointer;background:#2f7df6;color:#fff;transition:.25s}
+#choices{position:relative;height:260px}
+.run{position:absolute}
+.safe{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);background:#1aa56b}
+.money{font-size:48px;font-weight:700;color:#1565ff;animation:pulse 1s infinite}
+.confetti{position:fixed;top:-10px;width:8px;height:14px;animation:fall linear forwards}
+@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes pulse{50%{transform:scale(1.08)}}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+</style>
+</head>
+<body>
+<div class="card">
+<div class="screen active" id="s1">
+<div style="font-size:56px">💸</div><h2>Привет!</h2><p>Выбери сумму, которую хочешь получить. ◡̈</p>
+<button onclick="go(2)">Выбрать ☑</button>
+</div>
+<div class="screen" id="s2">
+<h2>💰 Ну, выбирай 😏</h2>
+<div id="choices"></div>
+<button class="safe" onclick="go(3)">Да ничего мне от тебя не надо 🤗</button>
+</div>
+<div class="screen" id="s3">
+<div style="font-size:56px">🎉</div>
+<h2>Молодец!</h2><p>Ты выиграл...</p>
+<div class="money">500с</div>
+<p>＼（＾○＾）人（＾○＾）／</p>
+<p>Скину как зп будет (◠‿◕)</p>
+</div>
+</div>
+<script>
+function go(n){
+document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+document.getElementById('s'+n).classList.add('active');
+if(n===3)confetti();
+}
+const labels=["200с","300с","400с","500с","1000с"];
+const c=document.getElementById("choices");
+labels.forEach((t,i)=>{
+ let b=document.createElement("button");
+ b.textContent=t;b.className="run";
+ b.style.left=(20+i*60)%260+"px";
+ b.style.top=(20+i*35)%180+"px";
+ c.appendChild(b);
+});
+function dodge(e){
+ const r=c.getBoundingClientRect();
+ const x=(e.touches?e.touches[0].clientX:e.clientX)-r.left;
+ const y=(e.touches?e.touches[0].clientY:e.clientY)-r.top;
+ document.querySelectorAll(".run").forEach(btn=>{
+   const br=btn.getBoundingClientRect();
+   const bx=btn.offsetLeft+br.width/2, by=btn.offsetTop+br.height/2;
+   const d=Math.hypot(x-bx,y-by);
+   if(d<120){
+     btn.style.left=Math.random()*(c.clientWidth-br.width)+"px";
+     btn.style.top=Math.random()*(c.clientHeight-br.height-20)+"px";
+   }
+ });
+}
+["mousemove","pointermove","touchmove"].forEach(ev=>c.addEventListener(ev,dodge,{passive:true}));
+function confetti(){
+ for(let i=0;i<120;i++){
+  let d=document.createElement("div");
+  d.className="confetti";
+  d.style.left=Math.random()*100+"vw";
+  d.style.background=`hsl(${Math.random()*360},90%,60%)`;
+  d.style.animationDuration=(2+Math.random()*3)+"s";
+  document.body.appendChild(d);
+  setTimeout(()=>d.remove(),5000);
+ }
+}
+</script>
+</body>
+</html>
